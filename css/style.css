@@ -45,7 +45,7 @@ button {
     border: none;
     color: #fff;
     font-family: 'Lato',
-    sans-serif;
+        sans-serif;
     font-style: normal;
     font-weight: 900;
     font-size: 14px;
@@ -54,9 +54,16 @@ button {
     align-items: center;
 }
 
-.button-icon, .button-price {
+.clear-cart {
+    padding: 5px 10px;
+    margin-left: auto;
+    margin-bottom: 5px;
+}
+
+.button-icon,
+.button-price {
     margin-right: 10px;
-    
+
 }
 
 .button-icon {
@@ -65,7 +72,7 @@ button {
 
 .button-icon:last-child {
     margin-right: 0;
-    
+
 }
 
 .cart-count {
@@ -113,7 +120,7 @@ button {
     font-size: 55px;
     line-height: 70px;
     font-family: 'Roboto Slab',
-    serif;
+        serif;
     margin-top: 20px;
     margin-bottom: 15px;
 }
@@ -185,7 +192,7 @@ button {
     margin: auto auto 0;
 }
 
-.goods-card-btn .button-price{
+.goods-card-btn .button-price {
     margin: 0;
 }
 
@@ -194,7 +201,7 @@ button {
     font-size: 25px;
     line-height: 30px;
     font-family: 'Roboto Slab',
-    serif;
+        serif;
     max-width: 222px;
     margin: 0;
 }
@@ -233,7 +240,7 @@ button {
 
 .section-title {
     font-family: 'Roboto Slab',
-    serif;
+        serif;
     font-size: 25px;
     line-height: 30px;
     color: #262D33;
@@ -270,7 +277,7 @@ button {
     font-size: 16px;
     line-height: 25px;
     font-family: 'Roboto Slab',
-    serif;
+        serif;
 }
 
 .goods-image {
@@ -360,7 +367,7 @@ button {
     left: 0;
     right: 0;
     z-index: 999;
-    background-color: rgba(0,0,0,0.3);
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
 .overlay.show {
@@ -376,7 +383,7 @@ button {
     position: relative;
 }
 
-.modal-header{
+.modal-header {
     display: flex;
     justify-content: space-between;
 }
@@ -417,12 +424,12 @@ button {
 }
 
 .cart-table th,
-.cart-table td{
+.cart-table td {
     text-align: left;
     border: 1px solid black
 }
 
-.cart-buy{
+.cart-buy {
     background-color: #28a745;
     border-color: #28a745;
     display: block;

@@ -18,6 +18,8 @@ const viewBtn = document.querySelectorAll('.view-btn')
 const cartTableGoods = document.querySelector('.cart-table__goods');
 const cartTableTotal = document.querySelector('.card-table__total');
 const cartCountText = document.querySelector('.cart-count');
+const clearCart = document.querySelector('.clear-cart');
+
 const getGoods = async () => {
 	const result = await fetch('db/db.json');
 	if (!result.ok) {
@@ -44,13 +46,16 @@ const cart = {
 				<td><button class="cart-btn-delete" data-id="${id}">x</button></td>
 			`
 			cartTableGoods.append(trGood);
-			cart.countText()
 		});
 
 		const totalPrice = this.cartGoods.reduce((summ, item) => {
 			return summ + (item.price * item.count);
 		}, 0)
 		cartTableTotal.textContent = totalPrice + '$';
+		const totalCount = this.cartGoods.reduce((countSumm, item) => {
+			return countSumm + item.count
+		}, 0)
+		cartCountText.textContent = totalCount;
 	},
 	deleteGood(id) {
 		this.cartGoods = this.cartGoods.filter(item => id !== item.id)
@@ -92,17 +97,20 @@ const cart = {
 						price,
 						count: 1,
 					})
+					this.renderCart()
 				})
 		}
-		this.renderCart()
 	},
-	countText() {
-		const totalCount = this.cartGoods.reduce((countSumm, item) => {
-			return countSumm + item.count
-		}, 0)
-		cartCountText.textContent = totalCount;
+	clearCart(id) {
+		this.cartGoods = this.cartGoods.filter(item => id === item.id)
+		this.renderCart();
 	}
 }
+
+clearCart.addEventListener('click', (event) => {
+	event.preventDefault();
+	cart.clearCart()
+})
 
 document.body.addEventListener('click', (e) => {
 	const addToCart = e.target.closest('.add-to-cart')
