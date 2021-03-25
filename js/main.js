@@ -11,6 +11,123 @@ const buttonCart = document.querySelector(".button-cart");
 const modalCart = document.querySelector("#modal-cart");
 const modalClose = document.querySelector(".modal-close");
 const scrollLink = document.querySelectorAll('a.scroll-link');
+const more = document.querySelector('.more')
+const navigationLink = document.querySelectorAll('.navigation-link')
+const longGoodsList = document.querySelector('.long-goods-list')
+const viewBtn = document.querySelectorAll('.view-btn')
+const cartTableGoods = document.querySelector('.cart-table__goods');
+const cartTableTotal = document.querySelector('.card-table__total');
+const cartCountText = document.querySelector('.cart-count');
+const getGoods = async () => {
+	const result = await fetch('db/db.json');
+	if (!result.ok) {
+		throw 'Error' + result.status
+	}
+	return await result.json();
+}
+
+const cart = {
+	cartGoods: [],
+	renderCart() {
+		cartTableGoods.textContent = '';
+		this.cartGoods.forEach(({ id, name, price, count }) => {
+			const trGood = document.createElement('tr');
+			trGood.className = 'cart-item';
+			trGood.dataset.id = id;
+			trGood.innerHTML = `
+				<td>${name}</td>
+				<td>${price}$</td>
+				<td><button class="cart-btn-minus" data-id="${id}">-</button></td>
+				<td>${count}</td>
+				<td><button class="cart-btn-plus" data-id="${id}">+</button></td>
+				<td>${price * count}$</td>
+				<td><button class="cart-btn-delete" data-id="${id}">x</button></td>
+			`
+			cartTableGoods.append(trGood);
+			cart.countText()
+		});
+
+		const totalPrice = this.cartGoods.reduce((summ, item) => {
+			return summ + (item.price * item.count);
+		}, 0)
+		cartTableTotal.textContent = totalPrice + '$';
+	},
+	deleteGood(id) {
+		this.cartGoods = this.cartGoods.filter(item => id !== item.id)
+		this.renderCart();
+	},
+	minusGood(id) {
+		for (const item of this.cartGoods) {
+			if (item.id === id) {
+				if (item.count <= 1) {
+					this.deleteGood(id)
+				} else {
+					item.count--;
+				}
+				break
+			}
+		}
+		this.renderCart()
+	},
+	plusGood(id) {
+		for (const item of this.cartGoods) {
+			if (item.id === id) {
+				item.count++;
+				break
+			}
+		}
+		this.renderCart()
+	},
+	addCartGoods(id) {
+		const goodItem = this.cartGoods.find(item => item.id === id);
+		if (goodItem) {
+			this.plusGood(id);
+		} else {
+			getGoods()
+				.then(data => data.find(item => item.id === id))
+				.then(({ id, name, price }) => {
+					this.cartGoods.push({
+						id,
+						name,
+						price,
+						count: 1,
+					})
+				})
+		}
+		this.renderCart()
+	},
+	countText() {
+		const totalCount = this.cartGoods.reduce((countSumm, item) => {
+			return countSumm + item.count
+		}, 0)
+		cartCountText.textContent = totalCount;
+	}
+}
+
+document.body.addEventListener('click', (e) => {
+	const addToCart = e.target.closest('.add-to-cart')
+	if (addToCart) {
+		cart.addCartGoods(addToCart.dataset.id)
+	}
+})
+
+cartTableGoods.addEventListener('click', (event) => {
+	const target = event.target;
+
+	if (target.classList.contains('cart-btn-delete')) {
+		// cart.deleteGood(target.dataset.id)
+		const id = target.closest('.cart-item').dataset.id
+		cart.deleteGood(id)
+	}
+	if (target.classList.contains('cart-btn-minus')) {
+		const id = target.closest('.cart-item').dataset.id
+		cart.minusGood(id)
+	}
+	if (target.classList.contains('cart-btn-plus')) {
+		const id = target.closest('.cart-item').dataset.id
+		cart.plusGood(id)
+	}
+})
 
 const openModal = (e) => {
 	modalCart.classList.add('show')
@@ -43,17 +160,6 @@ modalClose.addEventListener('click', closeModal);
 modalCart.addEventListener('click', target);
 
 // goods
-const more = document.querySelector('.more')
-const navigationLink = document.querySelectorAll('.navigation-link')
-const longGoodsList = document.querySelector('.long-goods-list')
-const viewBtn = document.querySelectorAll('.view-btn')
-
-const getGoods = async () => {
-	const result = await fetch('db/db.json');
-	if (!result.ok) {
-		throw 'Error' + result.status
-	} return await result.json();
-}
 
 const createCard = (objCard) => {
 	const card = document.createElement('div');
@@ -96,12 +202,7 @@ more.addEventListener('click', (event) => {
 
 const filterCards = (field, value) => {
 	getGoods()
-		.then((data) => {
-			const filteredGoods = data.filter((good) => {
-				return good[field] === value
-			})
-			return filteredGoods;
-		})
+		.then((data) => data.filter((good) => good[field] === value))
 		.then(renderCards);
 };
 
