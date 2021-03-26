@@ -20,6 +20,31 @@ const cartTableTotal = document.querySelector('.card-table__total');
 const cartCountText = document.querySelector('.cart-count');
 const clearCart = document.querySelector('.clear-cart');
 
+
+
+/*
+
+const checkGoods = () => {
+
+	const data = [];
+
+	return async () => {
+
+		if (data.length) return data;
+		const result = await fetch('db/db.json');
+		if (!result.ok) {
+			throw 'Error' + result.status
+		}
+		data.push(...(await result.json()))
+		return data
+	}
+}
+
+const getGoods = checkGoods()
+
+*/
+
+
 const getGoods = async () => {
 	const result = await fetch('db/db.json');
 	if (!result.ok) {
@@ -239,4 +264,78 @@ viewBtn.forEach((btn) => {
 			block: 'start'
 		})
 	})
+})
+
+
+// Server
+
+const modalForm = document.querySelector('.modal-form');
+
+
+
+
+const postData = dataUser => fetch('server.php', {
+	method: 'POST',
+	body: dataUser,
+})
+
+modalForm.addEventListener('submit', (e) => {
+	e.preventDefault();
+	const formData = new FormData(modalForm)
+	const modalInput = document.querySelectorAll('.modal-input');
+	formData.append('cart', JSON.stringify(cart.cartGoods))
+
+	let error = 0
+
+	modalInput.forEach((el) => {
+		if (el.value == '' || el.value == ' ') {
+			el.classList.add('error')
+		} else {
+			el.classList.remove('error')
+			console.log('work');
+
+		}
+		if (el.classList.contains('error')) {
+			error++
+		} else {
+			error = 0
+		}
+		return error
+	})
+
+	let cartError = 0;
+
+	if (cart.cartGoods.length === 0) {
+		cartError++;
+	} else { cartError = 0 }
+
+	console.log(error);
+	console.log(cartError);
+
+
+	if (error === 0 && cartError === 0) {
+		postData(formData)
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error(response.status)
+				} else {
+					alert('Заказ отправлен')
+					console.log(response.statusText);
+
+				}
+			})
+			.catch(err => {
+				alert('Запрос на сервер не отправлен, повторите позже')
+				console.error(err)
+			})
+			.finally(() => {
+				closeModal();
+				modalForm.reset();
+				// cart.cartGoods.length = 0;
+				cart.clearCart()
+			})
+	} else {
+		console.log('error');
+
+	}
 })
